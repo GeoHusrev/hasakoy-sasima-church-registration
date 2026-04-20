@@ -43,6 +43,9 @@ This repository contains the Python code used to implement the point cloud regis
 - `MDE_PointCloud_Registration.py`: main Python implementation of the registration workflow
 - `README.md`: repository description and usage notes
 - `requirements.txt`: Python package requirements
+- Due to file size constraints, the 3D point cloud datasets (TLS and UAV) used in this study are hosted in the Releases section.
+
+* **Download the Dataset:** [Hasakoy/Sasima Dataset (v1.0.0-review)](https://github.com/GeoHusrev/hasakoy-sasima-church-registration/releases/tag/v1.0.0-review)
 
 ## Disclaimer
 This code was prepared to support the methodology presented in the associated manuscript. It is provided for research and academic use only, without any express or implied warranty. Because numerical optimization and registration workflows may be affected by software versions, hardware, stochastic initialization, and input data characteristics, exact numerical reproduction may vary across environments. Users are responsible for validating the code and all derived results in their own applications.
