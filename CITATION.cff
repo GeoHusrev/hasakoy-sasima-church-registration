@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use this software or the accompanying point cloud data, please cite the associated manuscript listed under preferred-citation."
+title: "TLS-UAV Point Cloud Registration for the Hasakoy (Sasima) Church"
+abstract: "Public source code and Terrestrial Laser Scanning (TLS) and Unmanned Aerial Vehicle (UAV) point clouds for the multi-sensor registration workflow of the Hasakoy (Sasima) Church using the Multi-population Differential Evolution (MDE) algorithm of Karkinli (2023)."
+type: software
+authors:
+  - family-names: "Karkınlı"
+    given-names: "Ahmet Emin"
+    affiliation: "Department of Geomatics Engineering, Faculty of Engineering, Nigde Omer Halisdemir University, Nigde, Türkiye"
+    email: "akarkinli@ohu.edu.tr"
+  - family-names: "Janowski"
+    given-names: "Artur"
+    affiliation: "Institute of Geodesy and Construction, University of Warmia and Mazury in Olsztyn, Poland"
+    email: "artur.janowski@uwm.edu.pl"
+  - family-names: "Kaderli"
+    given-names: "Leyla"
+    affiliation: "Department of Architecture, Faculty of Architecture, Erciyes University, Kayseri, Türkiye"
+  - family-names: "Hüsrevoğlu"
+    given-names: "Betül Gül"
+    affiliation: "Department of Architecture, Graduate School of Natural and Applied Sciences, Erciyes University, Kayseri, Türkiye"
+  - family-names: "Hüsrevoğlu"
+    given-names: "Mustafa"
+    affiliation: "Department of Geomatics Engineering, Faculty of Engineering, Nigde Omer Halisdemir University, Nigde, Türkiye"
+keywords:
+  - cultural heritage documentation
+  - point cloud registration
+  - terrestrial laser scanning
+  - UAV photogrammetry
+  - multi-population differential evolution
+  - heuristic optimization
+license: MIT
+repository-code: "https://github.com/GeoHusrev/hasakoy-sasima-church-registration"
+preferred-citation:
+  type: article
+  title: "Robust Multi-Sensor Point Cloud Registration for Cultural Heritage Documentation: A Multi-Population Differential Evolution Approach"
+  authors:
+    - family-names: "Karkınlı"
+      given-names: "Ahmet Emin"
+    - family-names: "Janowski"
+      given-names: "Artur"
+    - family-names: "Kaderli"
+      given-names: "Leyla"
+    - family-names: "Hüsrevoğlu"
+      given-names: "Betül Gül"
+    - family-names: "Hüsrevoğlu"
+      given-names: "Mustafa"
+  year: 2026
+  notes: "Manuscript currently under peer review. Bibliographic details will be updated upon publication."
