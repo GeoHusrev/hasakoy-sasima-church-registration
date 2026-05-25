@@ -107,3 +107,35 @@ Code author and maintainer: **Dr. Ahmet Emin Karkınlı**
 Department of Geomatics Engineering, Faculty of Engineering,
 Nigde Omer Halisdemir University, Nigde 51240, Türkiye
 Email: akarkinli@ohu.edu.tr
+
+## Code Author
+**Ahmet Emin Karkınlı**  
+ORCID: 0000-0001-7216-6251  
+Department of Geomatics Engineering, Faculty of Engineering, Niğde Ömer Halisdemir University, Niğde 51240, Türkiye  
+Email: akarkinli@ohu.edu.tr
+
+## Associated Manuscript Authors
+- **Ahmet Emin Karkınlı**  
+  ORCID: 0000-0001-7216-6251  
+  Department of Geomatics Engineering, Faculty of Engineering, Niğde Ömer Halisdemir University, Niğde 51240, Türkiye  
+  Email: akarkinli@ohu.edu.tr
+
+- **Artur Janowski**  
+  ORCID: 0000-0002-5535-408X  
+  Institute of Geodesy and Construction, University of Warmia and Mazury in Olsztyn, 10-720 Olsztyn, Poland  
+  Email: artur.janowski@uwm.edu.pl
+
+- **Leyla Kaderli**  
+  ORCID: 0000-0002-3497-6664  
+  Department of Architecture, Faculty of Architecture, Erciyes University, Kayseri 38280, Türkiye  
+  Email: leylakaderli@erciyes.edu.tr
+
+- **Betül Gül Hüsrevoğlu**  
+  ORCID: 0009-0008-0252-9406  
+  Department of Architecture, Graduate School of Natural and Applied Sciences, Erciyes University, Kayseri 38280, Türkiye  
+  Email: betulgulnny@gmail.com
+
+- **Mustafa Hüsrevoğlu**  
+  ORCID: 0000-0003-1324-9617  
+  Department of Geomatics Engineering, Faculty of Engineering, Niğde Ömer Halisdemir University, Niğde 51240, Türkiye  
+  Email: mhusrevoglu@ohu.edu.tr
