@@ -1,16 +1,17 @@
 """
-PSO and MDE comparison script for TLS-UAV point cloud registration.
+PSO, AO, and MDE comparison script for TLS-UAV point cloud registration.
 
 This script reuses the public registration pipeline implemented in
-MDE_PointCloud_Registration.py and evaluates Particle Swarm Optimization (PSO)
-against the Multi-population Differential Evolution (MDE) algorithm of
-Karkinli (2023) from the same accepted coarse transformation under common
-search settings. The script also runs the Fast Point Feature Histogram (FPFH)
-neighborhood-radius sensitivity analysis.
+MDE_PointCloud_Registration.py and evaluates Particle Swarm Optimization (PSO),
+the Aquila Optimizer (AO), and the Multi-population Differential Evolution (MDE)
+algorithm of Karkinli (2023) from the same accepted coarse transformation under
+common search settings. The script also runs the Fast Point Feature Histogram
+(FPFH) neighborhood-radius sensitivity analysis.
 
-PSO and MDE share the same 6-DoF search vector, adaptive translation and
-rotation bounds, trimmed nearest-neighbor objective, population parameter, and
-maximum iteration or cycle budget so that the fine-tuning evaluation is fair.
+The metaheuristic methods share the same 6-DoF search vector, adaptive
+translation and rotation bounds, trimmed nearest-neighbor objective, population
+parameter, and maximum iteration or cycle budget so that the fine-tuning
+evaluation is fair.
 
 Code author
 -----------
@@ -30,6 +31,13 @@ Kennedy, J.; Eberhart, R. Particle swarm optimization. In Proceedings of
 ICNN'95 - International Conference on Neural Networks, Perth, WA, Australia,
 27 November - 1 December 1995; pp. 1942-1948.
 https://doi.org/10.1109/ICNN.1995.488968
+
+AO reference
+------------
+Abualigah, L.; Yousri, D.; Abd Elaziz, M.; Ewees, A.A.; Al-qaness, M.A.A.;
+Gandomi, A.H. Aquila Optimizer: A novel meta-heuristic optimization algorithm.
+Computers & Industrial Engineering 2021, 157, 107250.
+https://doi.org/10.1016/j.cie.2021.107250
 
 MDE reference
 -------------
@@ -69,13 +77,57 @@ from scipy.spatial.transform import Rotation as R
 
 ROOT = Path(__file__).resolve().parent
 PIPELINE_PATH = ROOT / "MDE_PointCloud_Registration.py"
-METHOD_ORDER = ["PSO", "MDE"]
+DEFAULT_METHOD_ORDER = ["PSO", "AO", "MDE"]
+MEALPY_METHODS = {"AO"}
 
 spec = importlib.util.spec_from_file_location("registration_pipeline", PIPELINE_PATH)
 reg = importlib.util.module_from_spec(spec)
 sys.modules["registration_pipeline"] = reg
 assert spec.loader is not None
 spec.loader.exec_module(reg)
+
+
+def resolve_data_path(filename: str) -> Path:
+    """Find a point-cloud file in the release layout or the manuscript layout."""
+    candidates = [
+        ROOT / "PointClouds" / filename,
+        ROOT / filename,
+        ROOT.parent / "PointClouds" / filename,
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
+
+def parse_method_order() -> List[str]:
+    """Read the requested methods from COMPARISON_METHODS."""
+    raw = os.environ.get("COMPARISON_METHODS")
+    if not raw:
+        return DEFAULT_METHOD_ORDER.copy()
+    methods = [item.strip().upper() for item in raw.split(",") if item.strip()]
+    valid = {"PSO", "AO", "MDE"}
+    invalid = [method for method in methods if method not in valid]
+    if invalid:
+        raise ValueError(f"Unsupported COMPARISON_METHODS entries: {invalid}")
+    return methods
+
+
+def load_mealpy_optimizer(method: str):
+    """Load the requested MEALPY optimizer class."""
+    extra_path = os.environ.get("MEALPY_EXTRA_PATH")
+    if extra_path and extra_path not in sys.path:
+        sys.path.insert(0, extra_path)
+    try:
+        from mealpy import AO
+    except ImportError as exc:
+        raise ImportError(
+            "MEALPY is required for the AO comparator. Install mealpy or set "
+            "MEALPY_EXTRA_PATH to a directory containing the package."
+        ) from exc
+    if method == "AO":
+        return AO.OriginalAO
+    raise ValueError(f"Unsupported MEALPY method: {method}")
 
 
 def compose_delta_transform(solution: np.ndarray) -> np.ndarray:
@@ -201,6 +253,76 @@ def pso_registration(
     }
 
 
+def mealpy_registration(
+    method: str,
+    source_pcd: o3d.geometry.PointCloud,
+    target_pcd: o3d.geometry.PointCloud,
+    coarse_transform: np.ndarray,
+    config: reg.Config,
+    seed: Optional[int] = None,
+    population_size: int = 10,
+    max_epochs: int = 250,
+) -> Tuple[np.ndarray, Dict[str, np.ndarray]]:
+    """Run a MEALPY optimizer on the same bounded 6-DoF registration objective."""
+    optimizer_cls = load_mealpy_optimizer(method)
+    from mealpy import FloatVar
+    from scipy.spatial import cKDTree
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    source_points = np.asarray(source_pcd.points)
+    target_points = np.asarray(target_pcd.points)
+    low, up, initial_rmse, translation_range, rotation_range = reg.build_adaptive_bounds(
+        source_pcd, target_pcd, coarse_transform, config
+    )
+    print(
+        f"[{method}] One-way RMSE for adaptive bounds: {initial_rmse:.6f} m; "
+        f"translation +/-{translation_range:.3f} m, rotation +/-{rotation_range:.3f} degrees"
+    )
+
+    if len(target_points) == 0:
+        raise ValueError("The target point cloud is empty.")
+    target_tree = cKDTree(target_points)
+
+    def objective(solution: np.ndarray) -> float:
+        if config.mde_sample_size > 0 and config.mde_sample_size < len(source_points):
+            sample_indices = np.random.choice(len(source_points), config.mde_sample_size, replace=False)
+            source_sample = source_points[sample_indices, :]
+        else:
+            source_sample = source_points
+        return float(
+            reg._fitness_single_candidate(
+                np.asarray(solution, dtype=np.float64),
+                source_sample,
+                target_tree,
+                coarse_transform,
+                config.mde_trim_ratio,
+            )
+        )
+
+    problem = {
+        "bounds": FloatVar(lb=tuple(low), ub=tuple(up), name="delta"),
+        "minmax": "min",
+        "obj_func": objective,
+        "log_to": "none",
+    }
+    model = optimizer_cls(epoch=max_epochs, pop_size=population_size)
+    termination = {"max_epoch": max_epochs, "max_early_stop": config.mde_early_stop_patience}
+    solve_mode = os.environ.get("MEALPY_SOLVE_MODE", "thread" if (config.mde_jobs or 0) > 1 else "single")
+    n_workers = config.mde_jobs if solve_mode in {"thread", "process"} else None
+    best = model.solve(problem, mode=solve_mode, n_workers=n_workers, seed=seed, termination=termination)
+    history = np.asarray(model.history.list_global_best_fit, dtype=np.float64)
+    if history.size == 0:
+        history = np.asarray([best.target.fitness], dtype=np.float64)
+
+    return compose_delta_transform(np.asarray(best.solution, dtype=np.float64)), {
+        "history": history,
+        "best_solution": np.asarray(best.solution, dtype=np.float64),
+        "best_fitness": np.array([float(best.target.fitness)], dtype=np.float64),
+    }
+
+
 def write_csv(path: Path, rows: List[Dict[str, object]]) -> None:
     """Write a list of dictionaries to CSV."""
     if not rows:
@@ -221,6 +343,7 @@ def summarize(rows: List[Dict[str, object]], method: str) -> Dict[str, object]:
     return {
         "method": method,
         "rmse_mean_m": float(np.mean(rmse)),
+        "rmse_median_m": float(np.median(rmse)),
         "rmse_std_m": float(np.std(rmse, ddof=1)) if rmse.size > 1 else 0.0,
         "rmse_min_m": float(np.min(rmse)),
         "rmse_max_m": float(np.max(rmse)),
@@ -245,10 +368,12 @@ def main() -> None:
     population_size = int(os.environ.get("COMPARISON_POPULATION_SIZE", "10"))
     max_cycles = int(os.environ.get("COMPARISON_MAX_CYCLES", "250"))
     early_stop_patience = int(os.environ.get("COMPARISON_PATIENCE", "30"))
+    method_order = parse_method_order()
+    run_fpfh_sensitivity = os.environ.get("COMPARISON_RUN_FPFH", "1").strip().lower() not in {"0", "false", "no"}
 
     config = reg.Config(
-        source_tls_path=str(ROOT / "PointClouds" / "TLS_PointCloud.las"),
-        target_uav_path=str(ROOT / "PointClouds" / "UAV_PointCloud.las"),
+        source_tls_path=str(resolve_data_path("TLS_PointCloud.las")),
+        target_uav_path=str(resolve_data_path("UAV_PointCloud.las")),
         results_dir=str(output_dir),
         n_runs=n_runs,
         mde_population_size=population_size,
@@ -272,7 +397,7 @@ def main() -> None:
         "population_parameter": population_size,
         "max_cycles": max_cycles,
         "patience": early_stop_patience,
-        "method_order": METHOD_ORDER,
+        "method_order": method_order,
     }
     (tables_dir / "environment.json").write_text(json.dumps(environment, indent=2), encoding="utf-8")
 
@@ -337,25 +462,47 @@ def main() -> None:
         run_number = run_offset + run_idx + 1
         print(f"\n========== Comparison run {run_number} seed={seed} ==========")
 
-        stochastic_methods = [
-            (
-                "PSO",
-                lambda: pso_registration(
-                    source_fine,
-                    target_fine,
-                    coarse_transform,
-                    config,
-                    seed=seed,
-                    swarm_size=population_size,
-                    max_iterations=max_cycles,
-                    patience=early_stop_patience,
-                ),
-            ),
-            (
-                "MDE",
-                lambda: reg.mde_registration(source_fine, target_fine, coarse_transform, config, seed=seed),
-            ),
-        ]
+        stochastic_methods = []
+        for method in method_order:
+            if method == "PSO":
+                stochastic_methods.append(
+                    (
+                        "PSO",
+                        lambda seed=seed: pso_registration(
+                            source_fine,
+                            target_fine,
+                            coarse_transform,
+                            config,
+                            seed=seed,
+                            swarm_size=population_size,
+                            max_iterations=max_cycles,
+                            patience=early_stop_patience,
+                        ),
+                    )
+                )
+            elif method == "MDE":
+                stochastic_methods.append(
+                    (
+                        "MDE",
+                        lambda seed=seed: reg.mde_registration(source_fine, target_fine, coarse_transform, config, seed=seed),
+                    )
+                )
+            elif method in MEALPY_METHODS:
+                stochastic_methods.append(
+                    (
+                        method,
+                        lambda method=method, seed=seed: mealpy_registration(
+                            method,
+                            source_fine,
+                            target_fine,
+                            coarse_transform,
+                            config,
+                            seed=seed,
+                            population_size=population_size,
+                            max_epochs=max_cycles,
+                        ),
+                    )
+                )
 
         for method, runner in stochastic_methods:
             print(f"Running {method}...")
@@ -383,9 +530,14 @@ def main() -> None:
             write_csv(tables_dir / "runtime_6dof_results.csv", rows)
 
     write_csv(tables_dir / "runtime_6dof_results.csv", rows)
-    summaries = [summarize(rows, method) for method in METHOD_ORDER]
+    summaries = [summarize(rows, method) for method in method_order]
     summaries = [row for row in summaries if row]
     write_csv(tables_dir / "method_summary.csv", summaries)
+
+    if not run_fpfh_sensitivity:
+        print("Skipping FPFH radius sensitivity because COMPARISON_RUN_FPFH=0.")
+        print("Comparison experiments completed.")
+        return
 
     print("Running FPFH radius sensitivity...")
     sensitivity_rows: List[Dict[str, object]] = []
