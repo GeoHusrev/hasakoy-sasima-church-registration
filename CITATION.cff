@@ -15,12 +15,15 @@ authors:
   - family-names: "Kaderli"
     given-names: "Leyla"
     affiliation: "Department of Architecture, Faculty of Architecture, Erciyes University, Kayseri, Türkiye"
+    email: "leylakaderli@erciyes.edu.tr"
   - family-names: "Hüsrevoğlu"
     given-names: "Betül Gül"
     affiliation: "Department of Architecture, Graduate School of Natural and Applied Sciences, Erciyes University, Kayseri, Türkiye"
+    email: "4011030096@erciyes.edu.tr"
   - family-names: "Hüsrevoğlu"
     given-names: "Mustafa"
     affiliation: "Department of Geomatics Engineering, Faculty of Engineering, Nigde Omer Halisdemir University, Nigde, Türkiye"
+    email: "mhusrevoglu@ohu.edu.tr"
 keywords:
   - cultural heritage documentation
   - point cloud registration
