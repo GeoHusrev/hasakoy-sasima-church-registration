@@ -1,9 +1,40 @@
 # TLS-UAV Point Cloud Registration for the Hasakoy (Sasima) Church
 
+[![DOI](https://img.shields.io/badge/DOI-10.3390%2Frs18121971-blue)](https://doi.org/10.3390/rs18121971)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Public source code and point cloud data for the multi-sensor registration
-workflow of the Hasakoy (Sasima) Church, accompanying the manuscript
+workflow of the Hasakoy (Sasima) Church, accompanying the article
 *Robust Multi-Sensor Point Cloud Registration for Cultural Heritage
-Documentation: A Multi-Population Differential Evolution Approach*.
+Documentation: A Multi-Population Based Differential Evolution Approach*,
+published in *Remote Sensing*.
+
+## How to Cite
+
+If you use this code or the accompanying point clouds in academic work, please
+cite the associated article:
+
+> Karkınlı, A.E.; Janowski, A.; Kaderli, L.; Gül Hüsrevoğlu, B.; Hüsrevoğlu, M.
+> Robust Multi-Sensor Point Cloud Registration for Cultural Heritage
+> Documentation: A Multi-Population Based Differential Evolution Approach.
+> *Remote Sensing* **2026**, *18*(12), 1971.
+> https://doi.org/10.3390/rs18121971
+
+```bibtex
+@article{karkinli2026robust,
+  author  = {Karkınlı, Ahmet Emin and Janowski, Artur and Kaderli, Leyla and {Gül Hüsrevoğlu}, Betül and Hüsrevoğlu, Mustafa},
+  title   = {Robust Multi-Sensor Point Cloud Registration for Cultural Heritage Documentation: A Multi-Population Based Differential Evolution Approach},
+  journal = {Remote Sensing},
+  year    = {2026},
+  volume  = {18},
+  number  = {12},
+  pages   = {1971},
+  doi     = {10.3390/rs18121971}
+}
+```
+
+A machine-readable citation entry is also provided in `CITATION.cff`; GitHub
+shows it under "Cite this repository" in the sidebar.
 
 ## Contents
 
@@ -85,19 +116,6 @@ The comparison outputs are written to the chosen output directory and include
 runtime statistics, the 6-DoF correction decomposition, the FPFH radius
 sensitivity table, and a per-method summary CSV.
 
-## How to Cite
-
-If you use this code or the accompanying point clouds in academic work, please
-cite the associated manuscript:
-
-> Karkınlı, A.E.; Janowski, A.; Kaderli, L.; Hüsrevoğlu, B.G.; Hüsrevoğlu, M.
-> *Robust Multi-Sensor Point Cloud Registration for Cultural Heritage
-> Documentation: A Multi-Population-Based Differential Evolution Approach.*
-> Manuscript under peer review, 2026. Full bibliographic details will be added
-> here upon publication.
-
-A machine-readable citation entry is also provided in `CITATION.cff`.
-
 ## Algorithm References
 
 - PSO: Kennedy, J.; Eberhart, R. Particle swarm optimization. *Proc. ICNN'95*,
@@ -115,7 +133,7 @@ A machine-readable citation entry is also provided in `CITATION.cff`.
 
 The source code in this repository is released under the MIT License (see
 `LICENSE`). The accompanying point cloud data in `PointClouds.zip` are made
-available for academic and research use; please cite the associated manuscript
+available for academic and research use; please cite the associated article
 when using the data.
 
 ## Code Author
@@ -125,7 +143,7 @@ ORCID: 0000-0001-7216-6251
 Department of Geomatics Engineering, Faculty of Engineering, Niğde Ömer Halisdemir University, Niğde 51240, Türkiye  
 Email: akarkinli@ohu.edu.tr
 
-## Associated Manuscript Authors
+## Associated Article Authors
 
 - **Ahmet Emin Karkınlı**  
   ORCID: 0000-0001-7216-6251  

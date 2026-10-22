@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software or the accompanying point cloud data, please cite the associated manuscript listed under preferred-citation."
+message: "If you use this software or the accompanying point cloud data, please cite the associated article listed under preferred-citation."
 title: "TLS-UAV Point Cloud Registration for the Hasakoy (Sasima) Church"
 abstract: "Public source code and Terrestrial Laser Scanning (TLS) and Unmanned Aerial Vehicle (UAV) point clouds for the multi-sensor registration workflow of the Hasakoy (Sasima) Church using the Multi-population Differential Evolution (MDE) algorithm of Karkinli (2023)."
 type: software
@@ -16,8 +16,8 @@ authors:
     given-names: "Leyla"
     affiliation: "Department of Architecture, Faculty of Architecture, Erciyes University, Kayseri, Türkiye"
     email: "leylakaderli@erciyes.edu.tr"
-  - family-names: "Hüsrevoğlu"
-    given-names: "Betül Gül"
+  - family-names: "Gül Hüsrevoğlu"
+    given-names: "Betül"
     affiliation: "Department of Architecture, Graduate School of Natural and Applied Sciences, Erciyes University, Kayseri, Türkiye"
     email: "4011030096@erciyes.edu.tr"
   - family-names: "Hüsrevoğlu"
@@ -35,17 +35,28 @@ license: MIT
 repository-code: "https://github.com/GeoHusrev/hasakoy-sasima-church-registration"
 preferred-citation:
   type: article
-  title: "Robust Multi-Sensor Point Cloud Registration for Cultural Heritage Documentation: A Multi-Population Differential Evolution Approach"
+  title: "Robust Multi-Sensor Point Cloud Registration for Cultural Heritage Documentation: A Multi-Population Based Differential Evolution Approach"
   authors:
     - family-names: "Karkınlı"
       given-names: "Ahmet Emin"
+      orcid: "https://orcid.org/0000-0001-7216-6251"
     - family-names: "Janowski"
       given-names: "Artur"
+      orcid: "https://orcid.org/0000-0002-5535-408X"
     - family-names: "Kaderli"
       given-names: "Leyla"
-    - family-names: "Hüsrevoğlu"
-      given-names: "Betül Gül"
+      orcid: "https://orcid.org/0000-0002-3497-6664"
+    - family-names: "Gül Hüsrevoğlu"
+      given-names: "Betül"
+      orcid: "https://orcid.org/0009-0008-0252-9406"
     - family-names: "Hüsrevoğlu"
       given-names: "Mustafa"
+      orcid: "https://orcid.org/0000-0003-1324-9617"
+  journal: "Remote Sensing"
   year: 2026
-  notes: "Manuscript currently under peer review. Bibliographic details will be updated upon publication."
+  month: 6
+  volume: 18
+  issue: 12
+  start: 1971
+  doi: "10.3390/rs18121971"
+  url: "https://doi.org/10.3390/rs18121971"
